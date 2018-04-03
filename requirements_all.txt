@@ -1013,7 +1013,7 @@ python-wink==1.7.3
 python_opendata_transport==0.0.3
 
 # homeassistant.components.zwave
-python_openzwave==0.4.3
+python_openzwave==0.4.4
 
 # homeassistant.components.egardia
 pythonegardia==1.0.39
