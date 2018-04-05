@@ -188,7 +188,7 @@ class HassDateFormatter(logging.Formatter):
         ct = self.converter(record.created)
         t = ct.strftime("%Y-%m-%d %H:%M:%S")
         z = ct.strftime("%z")
-        s = "{}.{:03d}{}".format(t, record.msecs, z)
+        s = "{}.{:03d}{}".format(t, round(record.msecs,0), z)
 
 @asyncio.coroutine
 def async_from_config_file(config_path: str,
