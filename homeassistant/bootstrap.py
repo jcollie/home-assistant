@@ -222,33 +222,33 @@ def async_enable_logging(hass: core.HomeAssistant, verbose: bool = False,
 
     This method must be run in the event loop.
     """
-    logging.basicConfig(level=logging.INFO)
+    #logging.basicConfig(level=logging.INFO)
     fmt = ("%(asctime)s %(levelname)s (%(threadName)s) "
            "[%(name)s] %(message)s")
     colorfmt = "%(log_color)s{}%(reset)s".format(fmt)
-    datefmt = '%Y-%m-%d %H:%M:%S'
+    datefmt = '%Y-%m-%d %H:%M:%S.%f%z'
 
     # Suppress overly verbose logs from libraries that aren't helpful
     logging.getLogger('requests').setLevel(logging.WARNING)
     logging.getLogger('urllib3').setLevel(logging.WARNING)
     logging.getLogger('aiohttp.access').setLevel(logging.WARNING)
 
-    try:
-        from colorlog import ColoredFormatter
-        logging.getLogger().handlers[0].setFormatter(ColoredFormatter(
-            colorfmt,
-            datefmt=datefmt,
-            reset=True,
-            log_colors={
-                'DEBUG': 'cyan',
-                'INFO': 'green',
-                'WARNING': 'yellow',
-                'ERROR': 'red',
-                'CRITICAL': 'red',
-            }
-        ))
-    except ImportError:
-        pass
+    #try:
+    #    from colorlog import ColoredFormatter
+    #    logging.getLogger().handlers[0].setFormatter(ColoredFormatter(
+    #        colorfmt,
+    #        datefmt=datefmt,
+    #        reset=True,
+    #        log_colors={
+    #            'DEBUG': 'cyan',
+    #            'INFO': 'green',
+    #            'WARNING': 'yellow',
+    #            'ERROR': 'red',
+    #            'CRITICAL': 'red',
+    #        }
+    #    ))
+    #except ImportError:
+    #    pass
 
     # Log errors to a file if we have write access to file or config dir
     if log_file is None:
