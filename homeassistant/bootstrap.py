@@ -184,7 +184,7 @@ def from_config_file(config_path: str,
 
 class HassDateFormatter(logging.Formatter):
     def formatTime(self, record, datefmt=None):
-        return arrow.get(record.created).format('YYYY-mm-dd HH:MM:SS.SSSZ')
+        return arrow.get(record.created).format('YYYY-MM-DD HH:mm:ss.SSSZ')
 
 @asyncio.coroutine
 def async_from_config_file(config_path: str,
