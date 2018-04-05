@@ -6,7 +6,6 @@ import os
 import sys
 from time import time
 from collections import OrderedDict
-import datetime
 
 from typing import Any, Optional, Dict
 
@@ -183,13 +182,8 @@ def from_config_file(config_path: str,
     return hass
 
 class HassDateFormatter(logging.Formatter):
-    converter = datetime.datetime.fromtimestamp
     def formatTime(self, record, datefmt=None):
-        ct = self.converter(record.created)
-        t = ct.strftime("%Y-%m-%d %H:%M:%S")
-        z = ct.strftime("%z")
-        s = "{}.{:03d}{}".format(t, int(round(record.msecs,0)), z)
-        return s
+        return arrow.get(record.created).format('YYYY-mm-dd HH:MM:SS.SSSZ')
 
 @asyncio.coroutine
 def async_from_config_file(config_path: str,
