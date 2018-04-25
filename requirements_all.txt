@@ -386,10 +386,10 @@ hipnotify==1.0.8
 holidays==0.9.4
 
 # homeassistant.components.frontend
-home-assistant-frontend==20180420.0
+home-assistant-frontend==20180425.0
 
 # homeassistant.components.homekit_controller
-# homekit==0.5
+# homekit==0.6
 
 # homeassistant.components.homematicip_cloud
 homematicip==0.8
@@ -898,7 +898,7 @@ pyowm==2.8.0
 pypollencom==1.1.2
 
 # homeassistant.components.qwikswitch
-pyqwikswitch==0.71
+pyqwikswitch==0.8
 
 # homeassistant.components.rainbird
 pyrainbird==0.1.3
