@@ -53,7 +53,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
                                             'channel_1', hass, gateway))
                 devices.append(XiaomiButton(device, 'Wall Switch (Both)',
                                             'dual_channel', hass, gateway))
-            elif model in ['cube', 'sensor_cube']:
+            elif model in ['cube', 'sensor_cube', 'sensor_cube.aqgl01']:
                 devices.append(XiaomiCube(device, hass, gateway))
     add_devices(devices)
 
@@ -330,6 +330,8 @@ class XiaomiButton(XiaomiBinarySensor):
             click_type = 'both'
         elif value == 'shake':
             click_type = 'shake'
+        elif value == 'long_click':
+            return False
         else:
             _LOGGER.warning("Unsupported click_type detected: %s", value)
             return False

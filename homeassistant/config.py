@@ -7,7 +7,7 @@ import os
 import re
 import shutil
 # pylint: disable=unused-import
-from typing import Any, List, Tuple  # NOQA
+from typing import Any, List, Tuple, Optional  # NOQA
 
 import voluptuous as vol
 from voluptuous.humanize import humanize_error
@@ -60,7 +60,7 @@ DEFAULT_CORE_CONFIG = (
     (CONF_TIME_ZONE, 'UTC', 'time_zone', 'Pick yours from here: http://en.wiki'
      'pedia.org/wiki/List_of_tz_database_time_zones'),
     (CONF_CUSTOMIZE, '!include customize.yaml', None, 'Customization file'),
-)  # type: Tuple[Tuple[str, Any, Any, str], ...]
+)  # type: Tuple[Tuple[str, Any, Any, Optional[str]], ...]
 DEFAULT_CONFIG = """
 # Show links to resources in log and frontend
 introduction:
@@ -167,7 +167,7 @@ def get_default_config_dir() -> str:
     """Put together the default configuration directory based on the OS."""
     data_dir = os.getenv('APPDATA') if os.name == "nt" \
         else os.path.expanduser('~')
-    return os.path.join(data_dir, CONFIG_DIR_NAME)
+    return os.path.join(data_dir, CONFIG_DIR_NAME)  # type: ignore
 
 
 def ensure_config_exists(config_dir: str, detect_location: bool = True) -> str:
@@ -548,6 +548,31 @@ def _identify_config_schema(module):
     return '', schema
 
 
+def _recursive_merge(pack_name, comp_name, config, conf, package):
+    """Merge package into conf, recursively."""
+    for key, pack_conf in package.items():
+        if isinstance(pack_conf, dict):
+            if not pack_conf:
+                continue
+            conf[key] = conf.get(key, OrderedDict())
+            _recursive_merge(pack_name, comp_name, config,
+                             conf=conf[key], package=pack_conf)
+
+        elif isinstance(pack_conf, list):
+            if not pack_conf:
+                continue
+            conf[key] = cv.ensure_list(conf.get(key))
+            conf[key].extend(cv.ensure_list(pack_conf))
+
+        else:
+            if conf.get(key) is not None:
+                _log_pkg_error(
+                    pack_name, comp_name, config,
+                    'has keys that are defined multiple times')
+            else:
+                conf[key] = pack_conf
+
+
 def merge_packages_config(hass, config, packages,
                           _log_pkg_error=_log_pkg_error):
     """Merge packages into the top-level configuration. Mutate config."""
@@ -607,11 +632,10 @@ def merge_packages_config(hass, config, packages,
                         config[comp_name][key] = val
                     continue
 
-            # The last merge type are sections that may occur only once
+            # The last merge type are sections that require recursive merging
             if comp_name in config:
-                _log_pkg_error(
-                    pack_name, comp_name, config, "may occur only once"
-                    " and it already exist in your main configuration")
+                _recursive_merge(pack_name, comp_name, config,
+                                 conf=config[comp_name], package=comp_conf)
                 continue
             config[comp_name] = comp_conf
 

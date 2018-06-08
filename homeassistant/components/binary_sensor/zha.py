@@ -108,7 +108,7 @@ class BinarySensor(zha.Entity, BinarySensorDevice):
     @property
     def is_on(self) -> bool:
         """Return True if entity is on."""
-        if self._state == 'unknown':
+        if self._state is None:
             return False
         return bool(self._state)
 
@@ -133,7 +133,8 @@ class BinarySensor(zha.Entity, BinarySensorDevice):
         from bellows.types.basic import uint16_t
 
         result = await zha.safe_read(self._endpoint.ias_zone,
-                                     ['zone_status'])
+                                     ['zone_status'],
+                                     allow_cache=False)
         state = result.get('zone_status', self._state)
         if isinstance(state, (int, uint16_t)):
             self._state = result.get('zone_status', self._state) & 3
@@ -202,13 +203,18 @@ class Switch(zha.Entity, BinarySensorDevice):
     def __init__(self, **kwargs):
         """Initialize Switch."""
         super().__init__(**kwargs)
-        self._state = True
-        self._level = 255
+        self._state = False
+        self._level = 0
         from zigpy.zcl.clusters import general
         self._out_listeners = {
             general.OnOff.cluster_id: self.OnOffListener(self),
             general.LevelControl.cluster_id: self.LevelListener(self),
         }
+
+    @property
+    def should_poll(self) -> bool:
+        """Let zha handle polling."""
+        return False
 
     @property
     def is_on(self) -> bool:
@@ -218,7 +224,10 @@ class Switch(zha.Entity, BinarySensorDevice):
     @property
     def device_state_attributes(self):
         """Return the device state attributes."""
-        return {'level': self._state and self._level or 0}
+        self._device_state_attributes.update({
+            'level': self._state and self._level or 0
+        })
+        return self._device_state_attributes
 
     def move_level(self, change):
         """Increment the level, setting state if appropriate."""

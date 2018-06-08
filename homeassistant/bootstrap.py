@@ -281,7 +281,8 @@ def async_enable_logging(hass: core.HomeAssistant,
 
         if log_rotate_days:
             err_handler = logging.handlers.TimedRotatingFileHandler(
-                err_log_path, when='midnight', backupCount=log_rotate_days)
+                err_log_path, when='midnight',
+                backupCount=log_rotate_days)  # type: logging.FileHandler
         else:
             err_handler = logging.FileHandler(
                 err_log_path, mode='w', delay=True)
@@ -300,7 +301,7 @@ def async_enable_logging(hass: core.HomeAssistant,
             EVENT_HOMEASSISTANT_CLOSE, async_stop_async_handler)
 
         logger = logging.getLogger('')
-        logger.addHandler(async_handler)
+        logger.addHandler(async_handler)  # type: ignore
         logger.setLevel(logging.INFO)
 
         # Save the log file location for access by other components.

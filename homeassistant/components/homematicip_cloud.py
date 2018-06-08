@@ -17,14 +17,18 @@ from homeassistant.helpers.discovery import async_load_platform
 from homeassistant.helpers.entity import Entity
 from homeassistant.core import callback
 
-REQUIREMENTS = ['homematicip==0.9.2.4']
+REQUIREMENTS = ['homematicip==0.9.4']
 
 _LOGGER = logging.getLogger(__name__)
 
 DOMAIN = 'homematicip_cloud'
 
 COMPONENTS = [
-    'sensor'
+    'sensor',
+    'binary_sensor',
+    'switch',
+    'light',
+    'climate',
 ]
 
 CONF_NAME = 'name'
